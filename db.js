@@ -7,8 +7,8 @@ async function connect(){
 const connectdb = await mysql.createConnection({
     host     : 'localhost',
     port     : 3306,
-    user     : '',
-    password : ''
+    user     : 'root',
+    password : 'aline99'
 });
 
 console.log('Conectou no MySQL!');
@@ -20,6 +20,9 @@ connectdb.query('use crud;');
 
 connectdb.query('CREATE TABLE IF NOT EXISTS clientes (id INT NOT NULL AUTO_INCREMENT, nome VARCHAR(255) NOT NULL, idade INT NOT NULL, uf VARCHAR(20) NOT NULL, PRIMARY KEY(id))');
 console.log('Criou tabela clientes!');
+
+connectdb.query('CREATE TABLE IF NOT EXISTS pedidos (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, cliente_id INT, produto VARCHAR(100), quantidade INT, valor_unitario DECIMAL(10, 2), CONSTRAINT `fk_cliente_pedido` FOREIGN KEY (cliente_id) REFERENCES clientes(id));');
+console.log('Criou tabela pedidos!');
 
 global.connection = connectdb;
 return global.connection;
@@ -34,9 +37,24 @@ async function insertCustomer(customer){
     return result; 
 }
 
+async function insertCustomerOrder(customer){
+    const conn = await connect();
+    const sql = 'INSERT INTO pedidos(cliente_id, produto, quantidade, valor_unitario) VALUES(?, ?, ?, ?);';
+    const values = [customer.cliente_id, customer.produto, customer.quantidade, customer.valor_unitario];
+    await conn.query(sql, values);
+    const [result] = await conn.query('SELECT * FROM pedidos WHERE id = (SELECT LAST_INSERT_ID())');
+    return result; 
+}
+
 async function selectCustomers(){
     const conn = await connect();
     const [rows] = await conn.query('SELECT * FROM clientes;');
+    return rows;
+}
+
+async function selectCustomersOrder(){
+    const conn = await connect();
+    const [rows] = await conn.query('SELECT * FROM pedidos;');
     return rows;
 }
 
@@ -56,4 +74,10 @@ async function deleteCustomer(id){
     return 'id: ' + id + ' Deletado com sucesso!';
 }
 
-module.exports = {connect, insertCustomer, selectCustomers, updateCustomer, deleteCustomer}
+async function combineTables(){
+    const conn = await connect();
+    const [rows] = await conn.query('SELECT c.nome, p.produto, p.quantidade, p.valor_unitario FROM clientes c INNER JOIN pedidos p ON c.id = p.cliente_id;');
+    return rows;
+}
+
+module.exports = {connect, insertCustomer, insertCustomerOrder, selectCustomers, selectCustomersOrder, updateCustomer, deleteCustomer, combineTables}
