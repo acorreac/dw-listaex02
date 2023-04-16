@@ -24,7 +24,7 @@ Criar um Crud simples em Mysql com junção de 2 tabelas.
 <h3>Acesse a pasta que o projeto foi colado pelo terminal (pode ser no Visual Studio Code mesmo) e execute o comando a baixo para instalar o node_modules necessário para o projeto rodar</h3>
 
 ```
-  npm install
+  npm install mysql2 --save
 ```
 <h3>Após, execute no terminal o comando abaixo para inicializar o projeto e ver no terminal os conteúdos inseridos nas listas e a junção das mesmas</h3>
 
