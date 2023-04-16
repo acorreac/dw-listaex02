@@ -6,9 +6,9 @@ async function connect(){
 
 const connectdb = await mysql.createConnection({
     host     : 'localhost',
-    port     : 3306,
-    user     : 'root',
-    password : 'aline99'
+    port     : 3306, //Porta de comunicação com o gerenciador de banco
+    user     : '', //coloque o usuario do gerenciador de banco (ex.root)
+    password : '' //Coloque a senha salva ao criar um usuario(ou deixe vazio se não foi cadastrado senha)
 });
 
 console.log('Conectou no MySQL!');
